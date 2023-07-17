@@ -5,7 +5,10 @@
   },
   "waitFor": "onCreateCommand",
   "updateContentCommand": "python3 -m pip install -r requirements.txt",
-  "postCreateCommand": "python3 -m venv ~/.venv && echo 'source ~/.venv/bin/activate' >> ~/.bashrc",
+  "postCreateCommand": [
+    "python3 -m venv ~/.venv && echo 'source ~/.venv/bin/activate' >> ~/.bashrc",
+    "source ~/.bashrc"
+  ],
   "customizations": {
     "codespaces": {
       "openFiles": []
