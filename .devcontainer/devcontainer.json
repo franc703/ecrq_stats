@@ -4,7 +4,7 @@
     "cpus": 4
   },
   "overrideCommand": false,
-  "remoteUser": "vscode",
+  "remoteUser": "root",
   "postCreateCommand": "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt",
   "settings": { 
     "terminal.integrated.shell.linux": "/bin/bash",
