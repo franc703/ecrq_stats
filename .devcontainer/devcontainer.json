@@ -3,15 +3,8 @@
   "hostRequirements": {
     "cpus": 4
   },
-  "overrideCommand": false,
-  "remoteUser": "root",
-  "postCreateCommand": "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt",
-  "settings": { 
-    "terminal.integrated.shell.linux": "/bin/bash",
-    "python.pythonPath": ".venv/bin/python",
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
-  },
+  "waitFor": "onCreateCommand",
+  "postCreateCommand": "python3 -m venv ~/.venv && . ~/.venv/bin/activate && pip install -r requirements.txt && echo 'source ~/.venv/bin/activate' >> ~/.bashrc",
   "customizations": {
     "codespaces": {
       "openFiles": []
@@ -19,8 +12,7 @@
     "vscode": {
       "extensions": [
         "ms-toolsai.jupyter",
-        "ms-python.python",
-        "github.copilot"
+        "ms-python.python"
       ]
     }
   }
