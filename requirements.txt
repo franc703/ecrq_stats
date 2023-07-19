@@ -5,4 +5,5 @@ geopandas
 statsmodels
 scikit-learn
 ipywidgets
+statsmodels
 
