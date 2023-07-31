@@ -7450,6 +7450,7 @@ a.anchor-link {
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
 <span class="kn">from</span> <span class="nn">statsmodels.iolib.summary2</span> <span class="kn">import</span> <span class="n">summary_col</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 </pre></div>
 </div>
 </div>
@@ -7565,20 +7566,20 @@ a.anchor-link {
         <span class="s2">"poverty_status"</span><span class="p">:</span> <span class="s2">"Poverty Status"</span><span class="p">,</span>
         <span class="s2">"commute_time"</span><span class="p">:</span> <span class="s2">"Commute Time"</span><span class="p">,</span>
         <span class="s2">"without_health_insurance"</span><span class="p">:</span> <span class="s2">"Without Health Insurance"</span><span class="p">,</span>
-        <span class="s2">"white"</span><span class="p">:</span> <span class="s2">"Share of White Population Tract"</span><span class="p">,</span>
-        <span class="s2">"black"</span><span class="p">:</span> <span class="s2">"Share of Black Population Tract"</span><span class="p">,</span>
-        <span class="s2">"am_indian_alaska_native"</span><span class="p">:</span> <span class="s2">"Share of American Indian/Alaska Native Population Tract"</span><span class="p">,</span>
-        <span class="s2">"asian"</span><span class="p">:</span> <span class="s2">"Share of Asian Population Tract"</span><span class="p">,</span>
-        <span class="s2">"other_race"</span><span class="p">:</span> <span class="s2">"Share of Other Race Population Tract"</span><span class="p">,</span>
-        <span class="s2">"hispanic_latino"</span><span class="p">:</span> <span class="s2">"Share of Hispanic/Latino Population Tract"</span><span class="p">,</span>
+        <span class="s2">"white"</span><span class="p">:</span> <span class="s2">"Share of White Population"</span><span class="p">,</span>
+        <span class="s2">"black"</span><span class="p">:</span> <span class="s2">"Share of Black Population"</span><span class="p">,</span>
+        <span class="s2">"am_indian_alaska_native"</span><span class="p">:</span> <span class="s2">"Share of American Indian/Alaska Native Population"</span><span class="p">,</span>
+        <span class="s2">"asian"</span><span class="p">:</span> <span class="s2">"Share of Asian Population"</span><span class="p">,</span>
+        <span class="s2">"other_race"</span><span class="p">:</span> <span class="s2">"Share of Other Race Population"</span><span class="p">,</span>
+        <span class="s2">"hispanic_latino"</span><span class="p">:</span> <span class="s2">"Share of Hispanic/Latino Population"</span><span class="p">,</span>
         <span class="s2">"density"</span><span class="p">:</span> <span class="s2">"Population Density"</span><span class="p">,</span>
         <span class="s2">"tract_pop"</span><span class="p">:</span> <span class="s2">"total_tract_population"</span><span class="p">,</span>
-        <span class="s2">"white_share_state"</span><span class="p">:</span> <span class="s2">"Share of White Population"</span><span class="p">,</span>
-        <span class="s2">"black_share_state"</span><span class="p">:</span> <span class="s2">"Share of Black Population"</span><span class="p">,</span>
-        <span class="s2">"am_indian_alaska_native_share_state"</span><span class="p">:</span> <span class="s2">"Share of American Indian/Alaska Native Population"</span><span class="p">,</span>
-        <span class="s2">"asian_share_state"</span><span class="p">:</span> <span class="s2">"Share of Asian Population"</span><span class="p">,</span>
-        <span class="s2">"other_race_share_state"</span><span class="p">:</span> <span class="s2">"Share of Other Race Population"</span><span class="p">,</span>
-        <span class="s2">"hispanic_latino_share_state"</span><span class="p">:</span> <span class="s2">"Share of Hispanic/Latino Population"</span><span class="p">,</span>
+        <span class="s2">"white_share_state"</span><span class="p">:</span> <span class="s2">"Share of White Population State"</span><span class="p">,</span>
+        <span class="s2">"black_share_state"</span><span class="p">:</span> <span class="s2">"Share of Black Population State"</span><span class="p">,</span>
+        <span class="s2">"am_indian_alaska_native_share_state"</span><span class="p">:</span> <span class="s2">"Share of American Indian/Alaska Native Population State"</span><span class="p">,</span>
+        <span class="s2">"asian_share_state"</span><span class="p">:</span> <span class="s2">"Share of Asian Population State"</span><span class="p">,</span>
+        <span class="s2">"other_race_share_state"</span><span class="p">:</span> <span class="s2">"Share of Other Race Population State"</span><span class="p">,</span>
+        <span class="s2">"hispanic_latino_share_state"</span><span class="p">:</span> <span class="s2">"Share of Hispanic/Latino Population State"</span><span class="p">,</span>
     <span class="p">},</span>
     <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
@@ -7643,14 +7644,14 @@ a.anchor-link {
 <th>Educational Attainment</th>
 <th>Employment Status</th>
 <th>...</th>
-<th>Share of Hispanic/Latino Population Tract</th>
-<th>Population Density</th>
-<th>Share of White Population</th>
-<th>Share of Black Population</th>
-<th>Share of American Indian/Alaska Native Population</th>
-<th>Share of Asian Population</th>
-<th>Share of Other Race Population</th>
 <th>Share of Hispanic/Latino Population</th>
+<th>Population Density</th>
+<th>Share of White Population State</th>
+<th>Share of Black Population State</th>
+<th>Share of American Indian/Alaska Native Population State</th>
+<th>Share of Asian Population State</th>
+<th>Share of Other Race Population State</th>
+<th>Share of Hispanic/Latino Population State</th>
 <th>total_tract_population</th>
 <th>tract_weight</th>
 </tr>
@@ -7669,13 +7670,13 @@ a.anchor-link {
 <td>0.142012</td>
 <td>0.455980</td>
 <td>...</td>
-<td>0.000150</td>
+<td>0.020089</td>
 <td>0.000218</td>
 <td>0.000377</td>
 <td>2.696204e-06</td>
 <td>0.000008</td>
-<td>0.000031</td>
-<td>0.000058</td>
+<td>3.055698e-06</td>
+<td>0.000004</td>
 <td>0.000008</td>
 <td>2240.0</td>
 <td>0.000404</td>
@@ -7693,12 +7694,12 @@ a.anchor-link {
 <td>0.084266</td>
 <td>0.442195</td>
 <td>...</td>
-<td>0.000067</td>
+<td>0.008757</td>
 <td>0.000226</td>
 <td>0.000369</td>
 <td>1.258228e-06</td>
 <td>0.000017</td>
-<td>0.000002</td>
+<td>7.189876e-07</td>
 <td>0.000019</td>
 <td>0.000004</td>
 <td>2284.0</td>
@@ -7717,12 +7718,12 @@ a.anchor-link {
 <td>0.155082</td>
 <td>0.498758</td>
 <td>...</td>
-<td>0.000240</td>
+<td>0.020672</td>
 <td>0.004462</td>
 <td>0.000584</td>
 <td>5.032914e-06</td>
 <td>0.000007</td>
-<td>0.000023</td>
+<td>2.336710e-06</td>
 <td>0.000015</td>
 <td>0.000013</td>
 <td>3483.0</td>
@@ -7741,12 +7742,12 @@ a.anchor-link {
 <td>0.121503</td>
 <td>0.485145</td>
 <td>...</td>
-<td>0.000134</td>
+<td>0.013468</td>
 <td>0.000295</td>
 <td>0.000491</td>
 <td>2.696204e-06</td>
 <td>0.000025</td>
-<td>0.000000</td>
+<td>0.000000e+00</td>
 <td>0.000008</td>
 <td>0.000007</td>
 <td>2970.0</td>
@@ -7765,12 +7766,12 @@ a.anchor-link {
 <td>0.087353</td>
 <td>0.438879</td>
 <td>...</td>
-<td>0.000033</td>
+<td>0.005249</td>
 <td>0.000295</td>
 <td>0.000335</td>
 <td>7.189876e-07</td>
 <td>0.000000</td>
-<td>0.000025</td>
+<td>2.516457e-06</td>
 <td>0.000003</td>
 <td>0.000002</td>
 <td>1905.0</td>
@@ -8035,80 +8036,80 @@ a.anchor-link {
 <tbody>
 <tr>
 <th>Share of Black Population</th>
-<td>-66.174</td>
-<td>-267.471***</td>
-<td>-395.081***</td>
-<td>-382.759***</td>
+<td>0.123</td>
+<td>-0.058</td>
+<td>-0.198*</td>
+<td>-0.202*</td>
 </tr>
 <tr>
 <th></th>
-<td>(91.852)</td>
-<td>(92.213)</td>
-<td>(100.668)</td>
-<td>(102.846)</td>
+<td>(0.093)</td>
+<td>(0.095)</td>
+<td>(0.102)</td>
+<td>(0.107)</td>
 </tr>
 <tr>
 <th>Share of American Indian/Alaska Native Population</th>
-<td>-94.009</td>
-<td>-118.957</td>
-<td>-52.549</td>
-<td>-58.755</td>
+<td>-0.039</td>
+<td>-0.015</td>
+<td>0.084</td>
+<td>0.084</td>
 </tr>
 <tr>
 <th></th>
-<td>(204.990)</td>
-<td>(200.741)</td>
-<td>(217.195)</td>
-<td>(217.505)</td>
+<td>(0.180)</td>
+<td>(0.178)</td>
+<td>(0.195)</td>
+<td>(0.195)</td>
 </tr>
 <tr>
 <th>Share of Asian Population</th>
-<td>-1.882</td>
-<td>-1.119</td>
-<td>-1.227</td>
-<td>-1.158</td>
+<td>-0.458***</td>
+<td>-0.401***</td>
+<td>-0.438***</td>
+<td>-0.440***</td>
 </tr>
 <tr>
 <th></th>
-<td>(2.565)</td>
-<td>(2.498)</td>
-<td>(2.472)</td>
-<td>(2.475)</td>
+<td>(0.121)</td>
+<td>(0.119)</td>
+<td>(0.121)</td>
+<td>(0.123)</td>
 </tr>
 <tr>
 <th>Share of Other Race Population</th>
-<td>-0.099</td>
-<td>1.123</td>
-<td>0.738</td>
-<td>0.688</td>
+<td>0.626</td>
+<td>0.019</td>
+<td>-0.071</td>
+<td>-0.078</td>
 </tr>
 <tr>
 <th></th>
-<td>(2.074)</td>
-<td>(2.042)</td>
-<td>(2.023)</td>
-<td>(2.025)</td>
+<td>(0.402)</td>
+<td>(0.399)</td>
+<td>(0.399)</td>
+<td>(0.403)</td>
 </tr>
 <tr>
 <th>Share of Hispanic/Latino Population</th>
-<td>-102.237</td>
-<td>-107.840</td>
-<td>-369.365**</td>
-<td>-361.579**</td>
+<td>0.086</td>
+<td>0.054</td>
+<td>-0.120</td>
+<td>-0.124</td>
 </tr>
 <tr>
 <th></th>
-<td>(154.317)</td>
-<td>(151.159)</td>
-<td>(163.105)</td>
-<td>(163.681)</td>
+<td>(0.130)</td>
+<td>(0.130)</td>
+<td>(0.139)</td>
+<td>(0.142)</td>
 </tr>
 <tr>
 <th>Median Household Income</th>
 <td></td>
-<td>-0.031***</td>
-<td>-0.018***</td>
-<td>-0.018***</td>
+<td>-0.030***</td>
+<td>-0.017***</td>
+<td>-0.017***</td>
 </tr>
 <tr>
 <th></th>
@@ -8120,126 +8121,126 @@ a.anchor-link {
 <tr>
 <th>Educational Attainment</th>
 <td></td>
-<td>0.856***</td>
-<td>0.421***</td>
-<td>0.444***</td>
+<td>0.860***</td>
+<td>0.453***</td>
+<td>0.448***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
-<td>(0.104)</td>
-<td>(0.135)</td>
-<td>(0.140)</td>
+<td>(0.107)</td>
+<td>(0.136)</td>
+<td>(0.142)</td>
 </tr>
 <tr>
 <th>Gini Index</th>
 <td></td>
 <td></td>
-<td>0.172</td>
-<td>0.166</td>
+<td>0.151</td>
+<td>0.151</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.175)</td>
-<td>(0.176)</td>
+<td>(0.177)</td>
+<td>(0.177)</td>
 </tr>
 <tr>
 <th>Employment Status</th>
 <td></td>
 <td></td>
-<td>0.367***</td>
-<td>0.376***</td>
+<td>0.311**</td>
+<td>0.309**</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.128)</td>
 <td>(0.129)</td>
+<td>(0.130)</td>
 </tr>
 <tr>
 <th>Housing Tenure</th>
 <td></td>
 <td></td>
 <td>-0.321***</td>
-<td>-0.332***</td>
+<td>-0.320***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.075)</td>
+<td>(0.076)</td>
 <td>(0.077)</td>
 </tr>
 <tr>
 <th>Poverty Status</th>
 <td></td>
 <td></td>
-<td>-0.262*</td>
-<td>-0.245*</td>
+<td>-0.243*</td>
+<td>-0.246*</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.142)</td>
 <td>(0.145)</td>
+<td>(0.146)</td>
 </tr>
 <tr>
 <th>Commute Time</th>
 <td></td>
 <td></td>
-<td>0.123</td>
-<td>0.123</td>
+<td>0.139</td>
+<td>0.141</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.182)</td>
-<td>(0.182)</td>
+<td>(0.183)</td>
+<td>(0.183)</td>
 </tr>
 <tr>
 <th>Without Health Insurance</th>
 <td></td>
 <td></td>
-<td>0.369</td>
-<td>0.364</td>
+<td>0.015</td>
+<td>0.022</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.724)</td>
-<td>(0.724)</td>
+<td>(0.725)</td>
+<td>(0.728)</td>
 </tr>
 <tr>
 <th>Population Density</th>
 <td></td>
 <td></td>
 <td></td>
-<td>-0.038</td>
+<td>0.009</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
 <td></td>
-<td>(0.064)</td>
+<td>(0.069)</td>
 </tr>
 <tr>
 <th>const</th>
-<td>0.588***</td>
-<td>0.637***</td>
-<td>0.479**</td>
-<td>0.483**</td>
+<td>0.570***</td>
+<td>0.620***</td>
+<td>0.496**</td>
+<td>0.496**</td>
 </tr>
 <tr>
 <th></th>
-<td>(0.011)</td>
-<td>(0.026)</td>
+<td>(0.014)</td>
+<td>(0.028)</td>
 <td>(0.234)</td>
 <td>(0.234)</td>
 </tr>
@@ -8252,24 +8253,24 @@ a.anchor-link {
 </tr>
 <tr>
 <th>R2</th>
-<td>0.002</td>
-<td>0.063</td>
+<td>0.012</td>
+<td>0.065</td>
 <td>0.087</td>
 <td>0.087</td>
 </tr>
 <tr>
 <th>Adjusted R2</th>
-<td>-0.002</td>
-<td>0.058</td>
+<td>0.008</td>
+<td>0.060</td>
 <td>0.078</td>
-<td>0.078</td>
+<td>0.077</td>
 </tr>
 <tr>
 <th>RMSE</th>
-<td>0.29684</td>
-<td>0.288339</td>
-<td>0.283314</td>
-<td>0.283324</td>
+<td>0.294784</td>
+<td>0.28751</td>
+<td>0.282839</td>
+<td>0.282829</td>
 </tr>
 </tbody>
 </table>
@@ -8445,80 +8446,80 @@ a.anchor-link {
 <tbody>
 <tr>
 <th>Share of Black Population</th>
-<td>299.071***</td>
-<td>236.778***</td>
-<td>154.270***</td>
-<td>85.528**</td>
+<td>0.266***</td>
+<td>0.270***</td>
+<td>0.244***</td>
+<td>0.177***</td>
 </tr>
 <tr>
 <th></th>
-<td>(37.120)</td>
-<td>(33.991)</td>
-<td>(36.462)</td>
-<td>(36.072)</td>
+<td>(0.036)</td>
+<td>(0.034)</td>
+<td>(0.036)</td>
+<td>(0.037)</td>
 </tr>
 <tr>
 <th>Share of American Indian/Alaska Native Population</th>
-<td>-97.675</td>
-<td>25.696</td>
-<td>-48.284</td>
-<td>-13.660</td>
+<td>-0.131*</td>
+<td>0.042</td>
+<td>0.034</td>
+<td>0.037</td>
 </tr>
 <tr>
 <th></th>
-<td>(82.843)</td>
-<td>(73.996)</td>
-<td>(78.669)</td>
-<td>(76.287)</td>
+<td>(0.070)</td>
+<td>(0.063)</td>
+<td>(0.069)</td>
+<td>(0.067)</td>
 </tr>
 <tr>
 <th>Share of Asian Population</th>
-<td>1.206</td>
-<td>0.586</td>
-<td>0.483</td>
-<td>0.096</td>
+<td>0.161***</td>
+<td>0.112***</td>
+<td>0.089**</td>
+<td>0.047</td>
 </tr>
 <tr>
 <th></th>
-<td>(1.037)</td>
-<td>(0.921)</td>
-<td>(0.895)</td>
-<td>(0.868)</td>
+<td>(0.047)</td>
+<td>(0.042)</td>
+<td>(0.043)</td>
+<td>(0.042)</td>
 </tr>
 <tr>
 <th>Share of Other Race Population</th>
-<td>0.034</td>
-<td>-0.916</td>
-<td>-1.185</td>
-<td>-0.905</td>
+<td>0.915***</td>
+<td>0.439***</td>
+<td>0.470***</td>
+<td>0.347**</td>
 </tr>
 <tr>
 <th></th>
-<td>(0.838)</td>
-<td>(0.753)</td>
-<td>(0.733)</td>
-<td>(0.710)</td>
+<td>(0.156)</td>
+<td>(0.141)</td>
+<td>(0.140)</td>
+<td>(0.139)</td>
 </tr>
 <tr>
 <th>Share of Hispanic/Latino Population</th>
-<td>111.706*</td>
-<td>213.676***</td>
-<td>100.569*</td>
-<td>57.132</td>
+<td>0.104**</td>
+<td>0.230***</td>
+<td>0.202***</td>
+<td>0.135***</td>
 </tr>
 <tr>
 <th></th>
-<td>(62.365)</td>
-<td>(55.719)</td>
-<td>(59.077)</td>
-<td>(57.409)</td>
+<td>(0.050)</td>
+<td>(0.046)</td>
+<td>(0.049)</td>
+<td>(0.049)</td>
 </tr>
 <tr>
 <th>Median Household Income</th>
 <td></td>
-<td>-0.011***</td>
-<td>0.001</td>
-<td>0.002</td>
+<td>-0.007***</td>
+<td>-0.001</td>
+<td>0.000</td>
 </tr>
 <tr>
 <th></th>
@@ -8530,51 +8531,51 @@ a.anchor-link {
 <tr>
 <th>Educational Attainment</th>
 <td></td>
-<td>0.708***</td>
-<td>0.542***</td>
-<td>0.417***</td>
+<td>0.647***</td>
+<td>0.535***</td>
+<td>0.443***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td>(0.038)</td>
-<td>(0.049)</td>
+<td>(0.048)</td>
 <td>(0.049)</td>
 </tr>
 <tr>
 <th>Gini Index</th>
 <td></td>
 <td></td>
-<td>-0.019</td>
-<td>0.018</td>
+<td>0.058</td>
+<td>0.064</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.064)</td>
 <td>(0.062)</td>
+<td>(0.061)</td>
 </tr>
 <tr>
 <th>Employment Status</th>
 <td></td>
 <td></td>
-<td>-0.142***</td>
-<td>-0.192***</td>
+<td>-0.147***</td>
+<td>-0.184***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.046)</td>
+<td>(0.045)</td>
 <td>(0.045)</td>
 </tr>
 <tr>
 <th>Housing Tenure</th>
 <td></td>
 <td></td>
-<td>-0.213***</td>
-<td>-0.153***</td>
+<td>-0.149***</td>
+<td>-0.123***</td>
 </tr>
 <tr>
 <th></th>
@@ -8587,8 +8588,8 @@ a.anchor-link {
 <th>Poverty Status</th>
 <td></td>
 <td></td>
-<td>-0.127**</td>
-<td>-0.223***</td>
+<td>-0.220***</td>
+<td>-0.265***</td>
 </tr>
 <tr>
 <th></th>
@@ -8601,57 +8602,57 @@ a.anchor-link {
 <th>Commute Time</th>
 <td></td>
 <td></td>
-<td>0.176***</td>
-<td>0.180***</td>
+<td>0.110*</td>
+<td>0.132**</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.066)</td>
 <td>(0.064)</td>
+<td>(0.063)</td>
 </tr>
 <tr>
 <th>Without Health Insurance</th>
 <td></td>
 <td></td>
-<td>0.430</td>
-<td>0.459*</td>
+<td>0.107</td>
+<td>0.225</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(0.262)</td>
-<td>(0.254)</td>
+<td>(0.255)</td>
+<td>(0.252)</td>
 </tr>
 <tr>
 <th>Population Density</th>
 <td></td>
 <td></td>
 <td></td>
-<td>0.210***</td>
+<td>0.156***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
 <td></td>
-<td>(0.022)</td>
+<td>(0.024)</td>
 </tr>
 <tr>
 <th>const</th>
-<td>0.114***</td>
-<td>0.029***</td>
-<td>0.095</td>
-<td>0.077</td>
+<td>0.083***</td>
+<td>-0.009</td>
+<td>0.076</td>
+<td>0.068</td>
 </tr>
 <tr>
 <th></th>
-<td>(0.004)</td>
-<td>(0.009)</td>
-<td>(0.085)</td>
+<td>(0.005)</td>
+<td>(0.010)</td>
 <td>(0.082)</td>
+<td>(0.081)</td>
 </tr>
 <tr>
 <th>N</th>
@@ -8662,24 +8663,24 @@ a.anchor-link {
 </tr>
 <tr>
 <th>R2</th>
-<td>0.072</td>
-<td>0.275</td>
-<td>0.318</td>
-<td>0.361</td>
+<td>0.150</td>
+<td>0.331</td>
+<td>0.358</td>
+<td>0.378</td>
 </tr>
 <tr>
 <th>Adjusted R2</th>
-<td>0.068</td>
-<td>0.271</td>
-<td>0.311</td>
-<td>0.354</td>
+<td>0.147</td>
+<td>0.327</td>
+<td>0.351</td>
+<td>0.371</td>
 </tr>
 <tr>
 <th>RMSE</th>
-<td>0.114679</td>
-<td>0.101092</td>
-<td>0.097739</td>
-<td>0.093949</td>
+<td>0.109104</td>
+<td>0.09636</td>
+<td>0.094873</td>
+<td>0.092863</td>
 </tr>
 </tbody>
 </table>
@@ -8855,213 +8856,213 @@ a.anchor-link {
 <tbody>
 <tr>
 <th>Share of Black Population</th>
-<td>158186.019***</td>
-<td>188388.462***</td>
-<td>177157.530***</td>
-<td>146742.032***</td>
+<td>103.926***</td>
+<td>197.477***</td>
+<td>222.639***</td>
+<td>208.761***</td>
 </tr>
 <tr>
 <th></th>
-<td>(20895.457)</td>
-<td>(15621.052)</td>
-<td>(16703.854)</td>
-<td>(16561.923)</td>
+<td>(20.165)</td>
+<td>(14.600)</td>
+<td>(15.247)</td>
+<td>(15.825)</td>
 </tr>
 <tr>
 <th>Share of American Indian/Alaska Native Population</th>
-<td>-248551.079***</td>
-<td>-91636.640***</td>
-<td>-69242.681*</td>
-<td>-53922.988</td>
+<td>-286.181***</td>
+<td>-92.304***</td>
+<td>-29.159</td>
+<td>-28.671</td>
 </tr>
 <tr>
 <th></th>
-<td>(46633.459)</td>
-<td>(34006.085)</td>
-<td>(36039.256)</td>
-<td>(35026.081)</td>
+<td>(39.152)</td>
+<td>(27.459)</td>
+<td>(29.035)</td>
+<td>(28.938)</td>
 </tr>
 <tr>
 <th>Share of Asian Population</th>
-<td>1743.729***</td>
-<td>629.540</td>
-<td>559.416</td>
-<td>388.513</td>
+<td>191.730***</td>
+<td>106.306***</td>
+<td>125.330***</td>
+<td>116.743***</td>
 </tr>
 <tr>
 <th></th>
-<td>(583.568)</td>
-<td>(423.168)</td>
-<td>(410.173)</td>
-<td>(398.623)</td>
+<td>(26.347)</td>
+<td>(18.352)</td>
+<td>(18.034)</td>
+<td>(18.180)</td>
 </tr>
 <tr>
 <th>Share of Other Race Population</th>
-<td>2297.628***</td>
-<td>562.964</td>
-<td>455.744</td>
-<td>579.625*</td>
+<td>680.678***</td>
+<td>417.136***</td>
+<td>441.425***</td>
+<td>415.856***</td>
 </tr>
 <tr>
 <th></th>
-<td>(471.723)</td>
-<td>(345.877)</td>
-<td>(335.709)</td>
-<td>(326.176)</td>
+<td>(87.514)</td>
+<td>(61.469)</td>
+<td>(59.377)</td>
+<td>(59.734)</td>
 </tr>
 <tr>
 <th>Share of Hispanic/Latino Population</th>
-<td>31673.113</td>
-<td>153684.045***</td>
-<td>112895.248***</td>
-<td>93675.771***</td>
+<td>-36.535</td>
+<td>127.854***</td>
+<td>134.604***</td>
+<td>120.759***</td>
 </tr>
 <tr>
 <th></th>
-<td>(35105.943)</td>
-<td>(25606.788)</td>
-<td>(27064.124)</td>
-<td>(26358.568)</td>
+<td>(28.254)</td>
+<td>(19.990)</td>
+<td>(20.712)</td>
+<td>(21.108)</td>
 </tr>
 <tr>
 <th>Median Household Income</th>
 <td></td>
-<td>3.539***</td>
-<td>5.551***</td>
-<td>6.055***</td>
+<td>6.134***</td>
+<td>4.828***</td>
+<td>5.094***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
-<td>(0.618)</td>
-<td>(0.915)</td>
-<td>(0.890)</td>
+<td>(0.587)</td>
+<td>(0.825)</td>
+<td>(0.827)</td>
 </tr>
 <tr>
 <th>Educational Attainment</th>
 <td></td>
-<td>389.627***</td>
-<td>328.555***</td>
-<td>273.036***</td>
+<td>340.699***</td>
+<td>312.144***</td>
+<td>293.102***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
-<td>(17.683)</td>
-<td>(22.327)</td>
-<td>(22.530)</td>
+<td>(16.480)</td>
+<td>(20.189)</td>
+<td>(21.014)</td>
 </tr>
 <tr>
 <th>Gini Index</th>
 <td></td>
 <td></td>
-<td>-76.998***</td>
-<td>-60.703**</td>
+<td>-18.574</td>
+<td>-17.409</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(29.118)</td>
-<td>(28.324)</td>
+<td>(26.342)</td>
+<td>(26.256)</td>
 </tr>
 <tr>
 <th>Employment Status</th>
 <td></td>
 <td></td>
-<td>-29.348</td>
-<td>-51.812**</td>
+<td>-23.821</td>
+<td>-31.485</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(21.255)</td>
-<td>(20.783)</td>
+<td>(19.152)</td>
+<td>(19.243)</td>
 </tr>
 <tr>
 <th>Housing Tenure</th>
 <td></td>
 <td></td>
-<td>-99.033***</td>
-<td>-72.611***</td>
+<td>-54.927***</td>
+<td>-49.508***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(12.381)</td>
-<td>(12.370)</td>
+<td>(11.307)</td>
+<td>(11.400)</td>
 </tr>
 <tr>
 <th>Poverty Status</th>
 <td></td>
 <td></td>
-<td>-164.414***</td>
-<td>-206.673***</td>
+<td>-235.371***</td>
+<td>-244.771***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(23.560)</td>
-<td>(23.346)</td>
+<td>(21.538)</td>
+<td>(21.673)</td>
 </tr>
 <tr>
 <th>Commute Time</th>
 <td></td>
 <td></td>
-<td>32.186</td>
-<td>33.893</td>
+<td>-14.390</td>
+<td>-9.785</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(30.248)</td>
-<td>(29.364)</td>
+<td>(27.275)</td>
+<td>(27.223)</td>
 </tr>
 <tr>
 <th>Without Health Insurance</th>
 <td></td>
 <td></td>
-<td>53.390</td>
-<td>66.058</td>
+<td>-93.776</td>
+<td>-69.401</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
-<td>(120.169)</td>
-<td>(116.661)</td>
+<td>(108.049)</td>
+<td>(107.965)</td>
 </tr>
 <tr>
 <th>Population Density</th>
 <td></td>
 <td></td>
 <td></td>
-<td>93.039***</td>
+<td>32.312***</td>
 </tr>
 <tr>
 <th></th>
 <td></td>
 <td></td>
 <td></td>
-<td>(10.313)</td>
+<td>(10.285)</td>
 </tr>
 <tr>
 <th>const</th>
-<td>172.564***</td>
-<td>47.662***</td>
-<td>157.899***</td>
-<td>149.878***</td>
+<td>155.529***</td>
+<td>22.816***</td>
+<td>135.993***</td>
+<td>134.362***</td>
 </tr>
 <tr>
 <th></th>
-<td>(2.433)</td>
-<td>(4.325)</td>
-<td>(38.757)</td>
-<td>(37.633)</td>
+<td>(2.991)</td>
+<td>(4.331)</td>
+<td>(34.805)</td>
+<td>(34.692)</td>
 </tr>
 <tr>
 <th>N</th>
@@ -9072,28 +9073,45 @@ a.anchor-link {
 </tr>
 <tr>
 <th>R2</th>
-<td>0.114</td>
-<td>0.538</td>
-<td>0.569</td>
-<td>0.594</td>
+<td>0.195</td>
+<td>0.618</td>
+<td>0.652</td>
+<td>0.655</td>
 </tr>
 <tr>
 <th>Adjusted R2</th>
-<td>0.110</td>
-<td>0.536</td>
-<td>0.564</td>
-<td>0.589</td>
+<td>0.192</td>
+<td>0.616</td>
+<td>0.649</td>
+<td>0.651</td>
 </tr>
 <tr>
 <th>RMSE</th>
-<td>64.921897</td>
-<td>46.776121</td>
-<td>45.459826</td>
-<td>44.072932</td>
+<td>61.386818</td>
+<td>42.06289</td>
+<td>40.791577</td>
+<td>40.590866</td>
 </tr>
 </tbody>
 </table>
 </div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Create a scatter plot of share of black population vs access to any provider</span>
+<span class="c1">#scatter_plot(</span>
+   <span class="c1"># x, y, x_label="Variable 1", y_label="Variable 2", title="Example Scatter Plot"</span>
+<span class="c1">#)</span>
+</pre></div>
 </div>
 </div>
 </div>
