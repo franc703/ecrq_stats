@@ -7461,7 +7461,40 @@ a.anchor-link {
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">sqrt</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
 <span class="kn">from</span> <span class="nn">statsmodels.iolib.summary2</span> <span class="kn">import</span> <span class="n">summary_col</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
 </pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Read only total_tract_population column from acs_data.csv</span>
+<span class="n">density_pop</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="s2">"../data/acs_data_all.csv"</span><span class="p">,</span>
+    <span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="s2">"tract"</span><span class="p">,</span> <span class="s2">"density"</span><span class="p">],</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="s2">"density"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="s2">"tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="n">density_pop</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[ ]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>Index(['tract', 'density'], dtype='object')</pre>
 </div>
 </div>
 </div>
@@ -7476,88 +7509,103 @@ a.anchor-link {
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Load the data</span>
 <span class="n">dtype_dict</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'white_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'white_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'white_totcost_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'black_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'black_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'black_totcost_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'am_indian_alaska_native_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'am_indian_alaska_native_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'am_indian_alaska_native_totcost_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'asian_supply_adj_supply_any_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'asian_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'asian_totcost_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'other_race_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'other_race_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'other_race_totcost_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'hispanic_latino_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'hispanic_latino_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'hispanic_latino_totcost_any_avg_tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'state'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
-    <span class="s1">'county'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
-    <span class="s1">'tract'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
-    <span class="s1">'median_household_income'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'gini_index'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'educational_attainment'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'employment_status'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'housing_tenure'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'poverty_status'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'commute_time'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'without_health_insurance'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'labor_force_status'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'total_population_25_years_and_over'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'white'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'black'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'am_indian_alaska_native'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'asian'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'native_hawaiian_pacific_islander'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'other_race'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'two_or_more_races'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'hispanic_latino'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
-    <span class="s1">'total_tract_population'</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span>
+    <span class="s2">"white_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"white_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"white_totcost_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"black_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"black_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"black_totcost_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"am_indian_alaska_native_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"am_indian_alaska_native_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"am_indian_alaska_native_totcost_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"asian_supply_adj_supply_any_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"asian_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"asian_totcost_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"other_race_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"other_race_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"other_race_totcost_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"hispanic_latino_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"hispanic_latino_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"hispanic_latino_totcost_any_avg_tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"state"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+    <span class="s2">"county"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+    <span class="s2">"tract"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+    <span class="s2">"median_household_income"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"gini_index"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"educational_attainment"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"employment_status"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"housing_tenure"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"poverty_status"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"commute_time"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"without_health_insurance"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"labor_force_status"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"total_population_25_years_and_over"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"white"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"black"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"am_indian_alaska_native"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"asian"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"native_hawaiian_pacific_islander"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"other_race"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"two_or_more_races"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"hispanic_latino"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="s2">"total_tract_population"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
 <span class="p">}</span>
 
 
-<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'../data/acs_data.csv'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_dict</span><span class="p">)</span>  <span class="c1"># Replace with the path to your data file</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="s2">"../data/acs_data.csv"</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype_dict</span>
+<span class="p">)</span>  <span class="c1"># Replace with the path to your data file</span>
+
+<span class="c1"># Merge density_pop to data</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">density_pop</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s2">"tract"</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="s2">"1:1"</span><span class="p">)</span>
+
+<span class="c1"># Scale median_household_income by 10,000</span>
+<span class="n">data</span><span class="p">[</span><span class="s2">"median_household_income"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"median_household_income"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10000</span>
+
+<span class="c1"># Scale density by 10,000</span>
+<span class="n">data</span><span class="p">[</span><span class="s2">"density"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"density"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10000</span>
 
 <span class="c1"># Rename the variables</span>
-<span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span>
-    <span class="s1">'white_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="s1">'White any'</span><span class="p">,</span>
-    <span class="s1">'white_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="s1">'White high rated'</span><span class="p">,</span>
-    <span class="s1">'white_totcost_any_avg_tract'</span><span class="p">:</span> <span class="s1">'White total cost'</span><span class="p">,</span>
-    <span class="s1">'black_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="s1">'Black any'</span><span class="p">,</span>
-    <span class="s1">'black_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="s1">'Black high rated'</span><span class="p">,</span>
-    <span class="s1">'black_totcost_any_avg_tract'</span><span class="p">:</span> <span class="s1">'Black total cost'</span><span class="p">,</span>
-    <span class="s1">'am_indian_alaska_native_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="s1">'American Indian Alaska Native any'</span><span class="p">,</span>
-    <span class="s1">'am_indian_alaska_native_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="s1">'American Indian Alaska Native high rated'</span><span class="p">,</span>
-    <span class="s1">'am_indian_alaska_native_totcost_any_avg_tract'</span><span class="p">:</span> <span class="s1">'American Indian Alaska Native total cost'</span><span class="p">,</span>
-    <span class="s1">'asian_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="s1">'Asian any'</span><span class="p">,</span>
-    <span class="s1">'asian_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="s1">'Asian high rated'</span><span class="p">,</span>
-    <span class="s1">'asian_totcost_any_avg_tract'</span><span class="p">:</span> <span class="s1">'Asian total cost'</span><span class="p">,</span>
-    <span class="s1">'other_race_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="s1">'Other race any'</span><span class="p">,</span>
-    <span class="s1">'other_race_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="s1">'Other race high rated'</span><span class="p">,</span>
-    <span class="s1">'other_race_totcost_any_avg_tract'</span><span class="p">:</span> <span class="s1">'Other race total cost'</span><span class="p">,</span>
-    <span class="s1">'hispanic_latino_adj_supply_any_avg_tract'</span><span class="p">:</span> <span class="s1">'Hispanic Latino any'</span><span class="p">,</span>
-    <span class="s1">'hispanic_latino_adj_supply_hr_avg_tract'</span><span class="p">:</span> <span class="s1">'Hispanic Latino high rated'</span><span class="p">,</span>
-    <span class="s1">'hispanic_latino_totcost_any_avg_tract'</span><span class="p">:</span> <span class="s1">'Hispanic Latino total cost'</span><span class="p">,</span>
-    <span class="s1">'median_household_income'</span><span class="p">:</span> <span class="s1">'Median Household Income'</span><span class="p">,</span>
-    <span class="s1">'gini_index'</span><span class="p">:</span> <span class="s1">'Gini Index'</span><span class="p">,</span>
-    <span class="s1">'educational_attainment'</span><span class="p">:</span> <span class="s1">'Educational Attainment'</span><span class="p">,</span>
-    <span class="s1">'employment_status'</span><span class="p">:</span> <span class="s1">'Employment Status'</span><span class="p">,</span>
-    <span class="s1">'housing_tenure'</span><span class="p">:</span> <span class="s1">'Housing Tenure'</span><span class="p">,</span>
-    <span class="s1">'poverty_status'</span><span class="p">:</span> <span class="s1">'Poverty Status'</span><span class="p">,</span>
-    <span class="s1">'commute_time'</span><span class="p">:</span> <span class="s1">'Commute Time'</span><span class="p">,</span>
-    <span class="s1">'without_health_insurance'</span><span class="p">:</span> <span class="s1">'Without Health Insurance'</span><span class="p">,</span>
-    <span class="s1">'labor_force_status'</span><span class="p">:</span> <span class="s1">'Labor Force Status'</span><span class="p">,</span>
-    <span class="s1">'total_population_25_years_and_over'</span><span class="p">:</span> <span class="s1">'Total Population 25 Years and Over'</span>
-<span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"white_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="s2">"White any"</span><span class="p">,</span>
+        <span class="s2">"white_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="s2">"White high rated"</span><span class="p">,</span>
+        <span class="s2">"white_totcost_any_avg_tract"</span><span class="p">:</span> <span class="s2">"White total cost"</span><span class="p">,</span>
+        <span class="s2">"black_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="s2">"Black any"</span><span class="p">,</span>
+        <span class="s2">"black_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="s2">"Black high rated"</span><span class="p">,</span>
+        <span class="s2">"black_totcost_any_avg_tract"</span><span class="p">:</span> <span class="s2">"Black total cost"</span><span class="p">,</span>
+        <span class="s2">"am_indian_alaska_native_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="s2">"American Indian Alaska Native any"</span><span class="p">,</span>
+        <span class="s2">"am_indian_alaska_native_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="s2">"American Indian Alaska Native high rated"</span><span class="p">,</span>
+        <span class="s2">"am_indian_alaska_native_totcost_any_avg_tract"</span><span class="p">:</span> <span class="s2">"American Indian Alaska Native total cost"</span><span class="p">,</span>
+        <span class="s2">"asian_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="s2">"Asian any"</span><span class="p">,</span>
+        <span class="s2">"asian_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="s2">"Asian high rated"</span><span class="p">,</span>
+        <span class="s2">"asian_totcost_any_avg_tract"</span><span class="p">:</span> <span class="s2">"Asian total cost"</span><span class="p">,</span>
+        <span class="s2">"other_race_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="s2">"Other race any"</span><span class="p">,</span>
+        <span class="s2">"other_race_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="s2">"Other race high rated"</span><span class="p">,</span>
+        <span class="s2">"other_race_totcost_any_avg_tract"</span><span class="p">:</span> <span class="s2">"Other race total cost"</span><span class="p">,</span>
+        <span class="s2">"hispanic_latino_adj_supply_any_avg_tract"</span><span class="p">:</span> <span class="s2">"Hispanic Latino any"</span><span class="p">,</span>
+        <span class="s2">"hispanic_latino_adj_supply_hr_avg_tract"</span><span class="p">:</span> <span class="s2">"Hispanic Latino high rated"</span><span class="p">,</span>
+        <span class="s2">"hispanic_latino_totcost_any_avg_tract"</span><span class="p">:</span> <span class="s2">"Hispanic Latino total cost"</span><span class="p">,</span>
+        <span class="s2">"median_household_income"</span><span class="p">:</span> <span class="s2">"Median Household Income"</span><span class="p">,</span>
+        <span class="s2">"gini_index"</span><span class="p">:</span> <span class="s2">"Gini Index"</span><span class="p">,</span>
+        <span class="s2">"educational_attainment"</span><span class="p">:</span> <span class="s2">"Educational Attainment"</span><span class="p">,</span>
+        <span class="s2">"employment_status"</span><span class="p">:</span> <span class="s2">"Employment Status"</span><span class="p">,</span>
+        <span class="s2">"housing_tenure"</span><span class="p">:</span> <span class="s2">"Housing Tenure"</span><span class="p">,</span>
+        <span class="s2">"poverty_status"</span><span class="p">:</span> <span class="s2">"Poverty Status"</span><span class="p">,</span>
+        <span class="s2">"commute_time"</span><span class="p">:</span> <span class="s2">"Commute Time"</span><span class="p">,</span>
+        <span class="s2">"without_health_insurance"</span><span class="p">:</span> <span class="s2">"Without Health Insurance"</span><span class="p">,</span>
+        <span class="s2">"labor_force_status"</span><span class="p">:</span> <span class="s2">"Labor Force Status"</span><span class="p">,</span>
+        <span class="s2">"total_population_25_years_and_over"</span><span class="p">:</span> <span class="s2">"Total Population 25 Years and Over"</span><span class="p">,</span>
+        <span class="s2">"density"</span><span class="p">:</span> <span class="s2">"Population Density"</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="c1"># calculate state population</span>
-<span class="n">state_population</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">'state'</span><span class="p">)[</span><span class="s1">'total_tract_population'</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s1">'sum'</span><span class="p">)</span>
+<span class="n">state_population</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"state"</span><span class="p">)[</span><span class="s2">"total_tract_population"</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">"sum"</span><span class="p">)</span>
 
 <span class="c1"># create tract_weight</span>
-<span class="n">data</span><span class="p">[</span><span class="s1">'tract_weight'</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">'total_tract_population'</span><span class="p">]</span> <span class="o">/</span> <span class="n">state_population</span>
+<span class="n">data</span><span class="p">[</span><span class="s2">"tract_weight"</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">"total_tract_population"</span><span class="p">]</span> <span class="o">/</span> <span class="n">state_population</span>
 </pre></div>
 </div>
 </div>
@@ -7613,7 +7661,6 @@ a.anchor-link {
 <th>American Indian Alaska Native total cost</th>
 <th>Asian any</th>
 <th>...</th>
-<th>white</th>
 <th>black</th>
 <th>am_indian_alaska_native</th>
 <th>asian</th>
@@ -7622,6 +7669,7 @@ a.anchor-link {
 <th>two_or_more_races</th>
 <th>hispanic_latino</th>
 <th>total_tract_population</th>
+<th>Population Density</th>
 <th>tract_weight</th>
 </tr>
 </thead>
@@ -7639,7 +7687,6 @@ a.anchor-link {
 <td>135.126480</td>
 <td>6.304092e-07</td>
 <td>...</td>
-<td>0.000458</td>
 <td>0.000042</td>
 <td>0.000741</td>
 <td>0.000063</td>
@@ -7648,6 +7695,7 @@ a.anchor-link {
 <td>0.000133</td>
 <td>0.000150</td>
 <td>2240</td>
+<td>0.000218</td>
 <td>0.000404</td>
 </tr>
 <tr>
@@ -7663,7 +7711,6 @@ a.anchor-link {
 <td>82.443626</td>
 <td>6.680830e-01</td>
 <td>...</td>
-<td>0.000446</td>
 <td>0.000020</td>
 <td>0.001586</td>
 <td>0.000004</td>
@@ -7672,6 +7719,7 @@ a.anchor-link {
 <td>0.000732</td>
 <td>0.000067</td>
 <td>2284</td>
+<td>0.000226</td>
 <td>0.000411</td>
 </tr>
 <tr>
@@ -7687,7 +7735,6 @@ a.anchor-link {
 <td>151.896408</td>
 <td>4.202191e-01</td>
 <td>...</td>
-<td>0.000719</td>
 <td>0.000079</td>
 <td>0.000672</td>
 <td>0.000048</td>
@@ -7696,6 +7743,7 @@ a.anchor-link {
 <td>0.000514</td>
 <td>0.000240</td>
 <td>3483</td>
+<td>0.004462</td>
 <td>0.000627</td>
 </tr>
 <tr>
@@ -7711,7 +7759,6 @@ a.anchor-link {
 <td>57.557652</td>
 <td>0.000000e+00</td>
 <td>...</td>
-<td>0.000593</td>
 <td>0.000070</td>
 <td>0.002534</td>
 <td>0.000000</td>
@@ -7720,6 +7767,7 @@ a.anchor-link {
 <td>0.000375</td>
 <td>0.000134</td>
 <td>2970</td>
+<td>0.000295</td>
 <td>0.000535</td>
 </tr>
 <tr>
@@ -7735,7 +7783,6 @@ a.anchor-link {
 <td>0.000000</td>
 <td>0.000000e+00</td>
 <td>...</td>
-<td>0.000406</td>
 <td>0.000011</td>
 <td>0.000000</td>
 <td>0.000052</td>
@@ -7744,11 +7791,12 @@ a.anchor-link {
 <td>0.000085</td>
 <td>0.000033</td>
 <td>1905</td>
+<td>0.000295</td>
 <td>0.000343</td>
 </tr>
 </tbody>
 </table>
-<p>5 rows × 48 columns</p>
+<p>5 rows × 49 columns</p>
 </div>
 </div>
 </div>
@@ -7774,32 +7822,33 @@ a.anchor-link {
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">variables</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'White any'</span><span class="p">:</span> <span class="s1">'white'</span><span class="p">,</span>
-    <span class="s1">'White high rated'</span><span class="p">:</span> <span class="s1">'white'</span><span class="p">,</span>
-    <span class="s1">'White total cost'</span><span class="p">:</span> <span class="s1">'white'</span><span class="p">,</span>
-    <span class="s1">'Black any'</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">,</span>
-    <span class="s1">'Black high rated'</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">,</span>
-    <span class="s1">'Black total cost'</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">,</span>
-    <span class="s1">'American Indian Alaska Native any'</span><span class="p">:</span> <span class="s1">'am_indian_alaska_native'</span><span class="p">,</span>
-    <span class="s1">'American Indian Alaska Native high rated'</span><span class="p">:</span> <span class="s1">'am_indian_alaska_native'</span><span class="p">,</span>
-    <span class="s1">'American Indian Alaska Native total cost'</span><span class="p">:</span> <span class="s1">'am_indian_alaska_native'</span><span class="p">,</span>
-    <span class="s1">'Asian any'</span><span class="p">:</span> <span class="s1">'asian'</span><span class="p">,</span>
-    <span class="s1">'Asian high rated'</span><span class="p">:</span> <span class="s1">'asian'</span><span class="p">,</span>
-    <span class="s1">'Asian total cost'</span><span class="p">:</span> <span class="s1">'asian'</span><span class="p">,</span>
-    <span class="s1">'Other race any'</span><span class="p">:</span> <span class="s1">'other_race'</span><span class="p">,</span>
-    <span class="s1">'Other race high rated'</span><span class="p">:</span> <span class="s1">'other_race'</span><span class="p">,</span>
-    <span class="s1">'Other race total cost'</span><span class="p">:</span> <span class="s1">'other_race'</span><span class="p">,</span>
-    <span class="s1">'Hispanic Latino any'</span><span class="p">:</span> <span class="s1">'hispanic_latino'</span><span class="p">,</span>
-    <span class="s1">'Hispanic Latino high rated'</span><span class="p">:</span> <span class="s1">'hispanic_latino'</span><span class="p">,</span>
-    <span class="s1">'Hispanic Latino total cost'</span><span class="p">:</span> <span class="s1">'hispanic_latino'</span><span class="p">,</span>
-    <span class="s1">'Median Household Income'</span><span class="p">:</span> <span class="s1">'median_household_income'</span><span class="p">,</span>
-    <span class="s1">'Gini Index'</span><span class="p">:</span> <span class="s1">'gini_index'</span><span class="p">,</span>
-    <span class="s1">'Educational Attainment'</span><span class="p">:</span> <span class="s1">'educational_attainment'</span><span class="p">,</span>
-    <span class="s1">'Employment Status'</span><span class="p">:</span> <span class="s1">'employment_status'</span><span class="p">,</span>
-    <span class="s1">'Housing Tenure'</span><span class="p">:</span> <span class="s1">'housing_tenure'</span><span class="p">,</span>
-    <span class="s1">'Poverty Status'</span><span class="p">:</span> <span class="s1">'poverty_status'</span><span class="p">,</span>
-    <span class="s1">'Commute Time'</span><span class="p">:</span> <span class="s1">'commute_time'</span><span class="p">,</span>
-    <span class="s1">'Without Health Insurance'</span><span class="p">:</span> <span class="s1">'without_health_insurance'</span><span class="p">,</span>
+    <span class="s2">"White any"</span><span class="p">:</span> <span class="s2">"white"</span><span class="p">,</span>
+    <span class="s2">"White high rated"</span><span class="p">:</span> <span class="s2">"white"</span><span class="p">,</span>
+    <span class="s2">"White total cost"</span><span class="p">:</span> <span class="s2">"white"</span><span class="p">,</span>
+    <span class="s2">"Black any"</span><span class="p">:</span> <span class="s2">"black"</span><span class="p">,</span>
+    <span class="s2">"Black high rated"</span><span class="p">:</span> <span class="s2">"black"</span><span class="p">,</span>
+    <span class="s2">"Black total cost"</span><span class="p">:</span> <span class="s2">"black"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native any"</span><span class="p">:</span> <span class="s2">"am_indian_alaska_native"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native high rated"</span><span class="p">:</span> <span class="s2">"am_indian_alaska_native"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native total cost"</span><span class="p">:</span> <span class="s2">"am_indian_alaska_native"</span><span class="p">,</span>
+    <span class="s2">"Asian any"</span><span class="p">:</span> <span class="s2">"asian"</span><span class="p">,</span>
+    <span class="s2">"Asian high rated"</span><span class="p">:</span> <span class="s2">"asian"</span><span class="p">,</span>
+    <span class="s2">"Asian total cost"</span><span class="p">:</span> <span class="s2">"asian"</span><span class="p">,</span>
+    <span class="s2">"Other race any"</span><span class="p">:</span> <span class="s2">"other_race"</span><span class="p">,</span>
+    <span class="s2">"Other race high rated"</span><span class="p">:</span> <span class="s2">"other_race"</span><span class="p">,</span>
+    <span class="s2">"Other race total cost"</span><span class="p">:</span> <span class="s2">"other_race"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino any"</span><span class="p">:</span> <span class="s2">"hispanic_latino"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino high rated"</span><span class="p">:</span> <span class="s2">"hispanic_latino"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino total cost"</span><span class="p">:</span> <span class="s2">"hispanic_latino"</span><span class="p">,</span>
+    <span class="s2">"Median Household Income"</span><span class="p">:</span> <span class="s2">"median_household_income"</span><span class="p">,</span>
+    <span class="s2">"Gini Index"</span><span class="p">:</span> <span class="s2">"gini_index"</span><span class="p">,</span>
+    <span class="s2">"Educational Attainment"</span><span class="p">:</span> <span class="s2">"educational_attainment"</span><span class="p">,</span>
+    <span class="s2">"Employment Status"</span><span class="p">:</span> <span class="s2">"employment_status"</span><span class="p">,</span>
+    <span class="s2">"Housing Tenure"</span><span class="p">:</span> <span class="s2">"housing_tenure"</span><span class="p">,</span>
+    <span class="s2">"Poverty Status"</span><span class="p">:</span> <span class="s2">"poverty_status"</span><span class="p">,</span>
+    <span class="s2">"Commute Time"</span><span class="p">:</span> <span class="s2">"commute_time"</span><span class="p">,</span>
+    <span class="s2">"Without Health Insurance"</span><span class="p">:</span> <span class="s2">"without_health_insurance"</span><span class="p">,</span>
+    <span class="s2">"Population Density"</span><span class="p">:</span> <span class="s2">"density"</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">racial_groups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">variables</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span><span class="mi">18</span><span class="p">]</span>
@@ -7811,22 +7860,29 @@ a.anchor-link {
 <span class="c1"># Calculate weighted averages and standard deviations for racial groups</span>
 <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">racial_groups</span><span class="p">,</span> <span class="n">racial_weights</span><span class="p">):</span>
     <span class="n">weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">weighted_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">-</span> <span class="n">weighted_mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-    <span class="n">summary_statistics</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'mean'</span><span class="p">:</span> <span class="n">weighted_mean</span><span class="p">,</span> <span class="s1">'std'</span><span class="p">:</span> <span class="n">weighted_std</span><span class="p">}</span>
+    <span class="n">weighted_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">-</span> <span class="n">weighted_mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="n">summary_statistics</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"mean"</span><span class="p">:</span> <span class="n">weighted_mean</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">:</span> <span class="n">weighted_std</span><span class="p">}</span>
 
 <span class="c1"># Calculate weighted averages and standard deviations for other covariates using 'tract_weight' as weight</span>
 <span class="k">for</span> <span class="n">covariate</span> <span class="ow">in</span> <span class="n">other_covariates</span><span class="p">:</span>
-    <span class="n">weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">covariate</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="s1">'tract_weight'</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="s1">'tract_weight'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">weighted_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">data</span><span class="p">[</span><span class="s1">'tract_weight'</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">covariate</span><span class="p">]</span> <span class="o">-</span> <span class="n">weighted_mean</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="s1">'tract_weight'</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-    <span class="n">summary_statistics</span><span class="p">[</span><span class="n">covariate</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'mean'</span><span class="p">:</span> <span class="n">weighted_mean</span><span class="p">,</span> <span class="s1">'std'</span><span class="p">:</span> <span class="n">weighted_std</span><span class="p">}</span>
+    <span class="n">weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">covariate</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="s2">"tract_weight"</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span>
+        <span class="s2">"tract_weight"</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">weighted_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"tract_weight"</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">covariate</span><span class="p">]</span> <span class="o">-</span> <span class="n">weighted_mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="s2">"tract_weight"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">summary_statistics</span><span class="p">[</span><span class="n">covariate</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"mean"</span><span class="p">:</span> <span class="n">weighted_mean</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">:</span> <span class="n">weighted_std</span><span class="p">}</span>
 
 <span class="c1"># Convert the dictionary to a DataFrame</span>
 <span class="n">summary_statistics_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">summary_statistics</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
 <span class="c1"># Format the summary statistics table</span>
-<span class="n">summary_statistics_df</span> <span class="o">=</span> <span class="n">summary_statistics_df</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="s1">'</span><span class="si">{:.2f}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
-<span class="n">summary_statistics_df</span><span class="p">[</span><span class="s1">'std'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'('</span> <span class="o">+</span> <span class="n">summary_statistics_df</span><span class="p">[</span><span class="s1">'std'</span><span class="p">]</span> <span class="o">+</span> <span class="s1">')'</span>
-<span class="n">summary_statistics_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'mean'</span><span class="p">:</span> <span class="s1">'Mean'</span><span class="p">,</span> <span class="s1">'std'</span><span class="p">:</span> <span class="s1">'Std Deviation'</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">summary_statistics_df</span> <span class="o">=</span> <span class="n">summary_statistics_df</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="s2">"</span><span class="si">{:.2f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+<span class="n">summary_statistics_df</span><span class="p">[</span><span class="s2">"std"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"("</span> <span class="o">+</span> <span class="n">summary_statistics_df</span><span class="p">[</span><span class="s2">"std"</span><span class="p">]</span> <span class="o">+</span> <span class="s2">")"</span>
+<span class="n">summary_statistics_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"mean"</span><span class="p">:</span> <span class="s2">"Mean"</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">:</span> <span class="s2">"Std Deviation"</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">summary_statistics_df</span><span class="p">)</span>
 </pre></div>
@@ -7841,33 +7897,34 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>                                              Mean Std Deviation
-White any                                     0.57        (0.28)
-White high rated                              0.13        (0.12)
-White total cost                            179.35       (67.40)
-Black any                                     0.59        (0.24)
-Black high rated                              0.20        (0.11)
-Black total cost                            214.47       (52.29)
-American Indian Alaska Native any             0.59        (0.37)
-American Indian Alaska Native high rated      0.12        (0.14)
-American Indian Alaska Native total cost    135.05       (74.13)
-Asian any                                     0.54        (0.24)
-Asian high rated                              0.18        (0.10)
-Asian total cost                            215.61       (59.33)
-Other race any                                0.59        (0.27)
-Other race high rated                         0.17        (0.12)
-Other race total cost                       197.89       (62.22)
-Hispanic Latino any                           0.59        (0.27)
-Hispanic Latino high rated                    0.16        (0.12)
-Hispanic Latino total cost                  191.08       (65.01)
-Median Household Income                   76723.79    (28606.62)
-Gini Index                                    0.41        (0.06)
-Educational Attainment                        0.24        (0.10)
-Employment Status                             0.67        (0.08)
-Housing Tenure                                0.73        (0.20)
-Poverty Status                                0.10        (0.09)
-Commute Time                                  0.92        (0.04)
-Without Health Insurance                      0.01        (0.01)
+<pre>                                            Mean Std Deviation
+White any                                   0.57        (0.28)
+White high rated                            0.13        (0.12)
+White total cost                          179.35       (67.40)
+Black any                                   0.59        (0.24)
+Black high rated                            0.20        (0.11)
+Black total cost                          214.47       (52.29)
+American Indian Alaska Native any           0.59        (0.37)
+American Indian Alaska Native high rated    0.12        (0.14)
+American Indian Alaska Native total cost  135.05       (74.13)
+Asian any                                   0.54        (0.24)
+Asian high rated                            0.18        (0.10)
+Asian total cost                          215.61       (59.33)
+Other race any                              0.59        (0.27)
+Other race high rated                       0.17        (0.12)
+Other race total cost                     197.89       (62.22)
+Hispanic Latino any                         0.59        (0.27)
+Hispanic Latino high rated                  0.16        (0.12)
+Hispanic Latino total cost                191.08       (65.01)
+Median Household Income                     7.67        (2.86)
+Gini Index                                  0.41        (0.06)
+Educational Attainment                      0.24        (0.10)
+Employment Status                           0.67        (0.08)
+Housing Tenure                              0.73        (0.20)
+Poverty Status                              0.10        (0.09)
+Commute Time                                0.92        (0.04)
+Without Health Insurance                    0.01        (0.01)
+Population Density                          0.12        (0.17)
 </pre>
 </div>
 </div>
@@ -7929,16 +7986,19 @@ Without Health Insurance                      0.01        (0.01)
     <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">race_variables</span><span class="p">:</span>
         <span class="c1"># Get the weights for this variable</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map</span><span class="p">[</span><span class="n">var</span><span class="p">]]</span>
-        
+
         <span class="c1"># Calculate the weighted percentiles</span>
-        <span class="n">percentiles</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">weighted_percentile</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">weights</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span>
+        <span class="n">percentiles</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">weighted_percentile</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">weights</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="p">]</span>
 
     <span class="c1"># Transpose the DataFrame for a better layout</span>
     <span class="n">percentiles</span> <span class="o">=</span> <span class="n">percentiles</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
 
     <span class="c1"># Rename the index and columns for clarity</span>
-    <span class="n">percentiles</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'Race'</span>
-    <span class="n">percentiles</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">th Percentile'</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span>
+    <span class="n">percentiles</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"Race"</span>
+    <span class="n">percentiles</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">th Percentile"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">5</span><span class="p">)]</span>
 
     <span class="k">return</span> <span class="n">percentiles</span>
 </pre></div>
@@ -7956,29 +8016,23 @@ Without Health Insurance                      0.01        (0.01)
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># CDF plot</span>
 <span class="n">race_variables1</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">'White any'</span><span class="p">,</span> 
-    <span class="s1">'Black any'</span><span class="p">,</span> 
-    <span class="s1">'American Indian Alaska Native any'</span><span class="p">,</span> 
-    <span class="s1">'Asian any'</span><span class="p">,</span> 
-    <span class="s1">'Other race any'</span><span class="p">,</span> 
-    <span class="s1">'Hispanic Latino any'</span><span class="p">,</span>
+    <span class="s2">"White any"</span><span class="p">,</span>
+    <span class="s2">"Black any"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native any"</span><span class="p">,</span>
+    <span class="s2">"Asian any"</span><span class="p">,</span>
+    <span class="s2">"Other race any"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino any"</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">'#8dd3c7'</span><span class="p">,</span> 
-    <span class="s1">'#ffffb3'</span><span class="p">,</span> 
-    <span class="s1">'#bebada'</span><span class="p">,</span> 
-    <span class="s1">'#fb8072'</span><span class="p">,</span>
-    <span class="s1">'#fdb462'</span><span class="p">,</span>
-    <span class="s1">'#fccde5'</span><span class="p">]</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"#8dd3c7"</span><span class="p">,</span> <span class="s2">"#ffffb3"</span><span class="p">,</span> <span class="s2">"#bebada"</span><span class="p">,</span> <span class="s2">"#fb8072"</span><span class="p">,</span> <span class="s2">"#fdb462"</span><span class="p">,</span> <span class="s2">"#fccde5"</span><span class="p">]</span>
 
 <span class="n">weight_map1</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'White any'</span><span class="p">:</span> <span class="s1">'white'</span><span class="p">,</span>
-    <span class="s1">'Black any'</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">,</span>
-    <span class="s1">'American Indian Alaska Native any'</span><span class="p">:</span> <span class="s1">'am_indian_alaska_native'</span><span class="p">,</span>
-    <span class="s1">'Asian any'</span><span class="p">:</span> <span class="s1">'asian'</span><span class="p">,</span>
-    <span class="s1">'Other race any'</span><span class="p">:</span> <span class="s1">'other_race'</span><span class="p">,</span>
-    <span class="s1">'Hispanic Latino any'</span><span class="p">:</span> <span class="s1">'hispanic_latino'</span><span class="p">,</span>
+    <span class="s2">"White any"</span><span class="p">:</span> <span class="s2">"white"</span><span class="p">,</span>
+    <span class="s2">"Black any"</span><span class="p">:</span> <span class="s2">"black"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native any"</span><span class="p">:</span> <span class="s2">"am_indian_alaska_native"</span><span class="p">,</span>
+    <span class="s2">"Asian any"</span><span class="p">:</span> <span class="s2">"asian"</span><span class="p">,</span>
+    <span class="s2">"Other race any"</span><span class="p">:</span> <span class="s2">"other_race"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino any"</span><span class="p">:</span> <span class="s2">"hispanic_latino"</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -7987,22 +8041,22 @@ Without Health Insurance                      0.01        (0.01)
 <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">race_variables1</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
     <span class="c1"># Get the weights for this variable</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">var</span><span class="p">]]</span>
-    
+
     <span class="c1"># Sort the values and weights by the values</span>
     <span class="n">values</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">var</span><span class="p">],</span> <span class="n">weights</span><span class="p">)))</span>
-    
+
     <span class="c1"># Calculate the cumulative sum of the weights</span>
     <span class="n">cumulative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
-    
+
     <span class="c1"># Normalize the cumulative sum to create a CDF</span>
     <span class="n">cumulative</span> <span class="o">=</span> <span class="n">cumulative</span> <span class="o">/</span> <span class="n">cumulative</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    
+
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">cumulative</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
 
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Weighted Cumulative Distribution Function (CDF) Plot'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Access to any provider'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Cumulative Probability'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'upper left'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Weighted Cumulative Distribution Function (CDF) Plot"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Access to any provider"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Cumulative Probability"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
 
 <span class="c1"># Set x-axis limit</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
@@ -8151,29 +8205,23 @@ Hispanic Latino any                       1.050913
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># CDF plot</span>
 <span class="n">race_variables2</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">'White high rated'</span><span class="p">,</span> 
-    <span class="s1">'Black high rated'</span><span class="p">,</span> 
-    <span class="s1">'American Indian Alaska Native high rated'</span><span class="p">,</span> 
-    <span class="s1">'Asian high rated'</span><span class="p">,</span>
-    <span class="s1">'Other race high rated'</span><span class="p">,</span>
-    <span class="s1">'Hispanic Latino high rated'</span><span class="p">,</span>
+    <span class="s2">"White high rated"</span><span class="p">,</span>
+    <span class="s2">"Black high rated"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native high rated"</span><span class="p">,</span>
+    <span class="s2">"Asian high rated"</span><span class="p">,</span>
+    <span class="s2">"Other race high rated"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino high rated"</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">'#8dd3c7'</span><span class="p">,</span> 
-    <span class="s1">'#ffffb3'</span><span class="p">,</span> 
-    <span class="s1">'#bebada'</span><span class="p">,</span> 
-    <span class="s1">'#fb8072'</span><span class="p">,</span> 
-    <span class="s1">'#fdb462'</span><span class="p">,</span>
-    <span class="s1">'#fccde5'</span><span class="p">]</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"#8dd3c7"</span><span class="p">,</span> <span class="s2">"#ffffb3"</span><span class="p">,</span> <span class="s2">"#bebada"</span><span class="p">,</span> <span class="s2">"#fb8072"</span><span class="p">,</span> <span class="s2">"#fdb462"</span><span class="p">,</span> <span class="s2">"#fccde5"</span><span class="p">]</span>
 
 <span class="n">weight_map2</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'White high rated'</span><span class="p">:</span> <span class="s1">'white'</span><span class="p">,</span>
-    <span class="s1">'Black high rated'</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">,</span>
-    <span class="s1">'American Indian Alaska Native high rated'</span><span class="p">:</span> <span class="s1">'am_indian_alaska_native'</span><span class="p">,</span>
-    <span class="s1">'Asian high rated'</span><span class="p">:</span> <span class="s1">'asian'</span><span class="p">,</span>
-    <span class="s1">'Other race high rated'</span><span class="p">:</span> <span class="s1">'other_race'</span><span class="p">,</span>
-    <span class="s1">'Hispanic Latino high rated'</span><span class="p">:</span> <span class="s1">'hispanic_latino'</span><span class="p">,</span>
+    <span class="s2">"White high rated"</span><span class="p">:</span> <span class="s2">"white"</span><span class="p">,</span>
+    <span class="s2">"Black high rated"</span><span class="p">:</span> <span class="s2">"black"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native high rated"</span><span class="p">:</span> <span class="s2">"am_indian_alaska_native"</span><span class="p">,</span>
+    <span class="s2">"Asian high rated"</span><span class="p">:</span> <span class="s2">"asian"</span><span class="p">,</span>
+    <span class="s2">"Other race high rated"</span><span class="p">:</span> <span class="s2">"other_race"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino high rated"</span><span class="p">:</span> <span class="s2">"hispanic_latino"</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -8182,22 +8230,22 @@ Hispanic Latino any                       1.050913
 <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">race_variables2</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
     <span class="c1"># Get the weights for this variable</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">var</span><span class="p">]]</span>
-    
+
     <span class="c1"># Sort the values and weights by the values</span>
     <span class="n">values</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">var</span><span class="p">],</span> <span class="n">weights</span><span class="p">)))</span>
-    
+
     <span class="c1"># Calculate the cumulative sum of the weights</span>
     <span class="n">cumulative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
-    
+
     <span class="c1"># Normalize the cumulative sum to create a CDF</span>
     <span class="n">cumulative</span> <span class="o">=</span> <span class="n">cumulative</span> <span class="o">/</span> <span class="n">cumulative</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    
+
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">cumulative</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
 
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Weighted Cumulative Distribution Function (CDF) Plot'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'High rated share'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Cumulative Probability'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'upper left'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Weighted Cumulative Distribution Function (CDF) Plot"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"High rated share"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Cumulative Probability"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
 
 <span class="c1"># Set x-axis limit</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">)</span>
@@ -8346,29 +8394,23 @@ Hispanic Latino high rated                       0.402221
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># CDF plot</span>
 <span class="n">race_variables3</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">'White total cost'</span><span class="p">,</span>
-    <span class="s1">'Black total cost'</span><span class="p">,</span>
-    <span class="s1">'American Indian Alaska Native total cost'</span><span class="p">,</span> 
-    <span class="s1">'Asian total cost'</span><span class="p">,</span>
-    <span class="s1">'Other race total cost'</span><span class="p">,</span>
-    <span class="s1">'Hispanic Latino total cost'</span><span class="p">,</span>
+    <span class="s2">"White total cost"</span><span class="p">,</span>
+    <span class="s2">"Black total cost"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native total cost"</span><span class="p">,</span>
+    <span class="s2">"Asian total cost"</span><span class="p">,</span>
+    <span class="s2">"Other race total cost"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino total cost"</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">'#8dd3c7'</span><span class="p">,</span> 
-    <span class="s1">'#ffffb3'</span><span class="p">,</span> 
-    <span class="s1">'#bebada'</span><span class="p">,</span> 
-    <span class="s1">'#fb8072'</span><span class="p">,</span>
-    <span class="s1">'#fdb462'</span><span class="p">,</span>  
-    <span class="s1">'#fccde5'</span><span class="p">]</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"#8dd3c7"</span><span class="p">,</span> <span class="s2">"#ffffb3"</span><span class="p">,</span> <span class="s2">"#bebada"</span><span class="p">,</span> <span class="s2">"#fb8072"</span><span class="p">,</span> <span class="s2">"#fdb462"</span><span class="p">,</span> <span class="s2">"#fccde5"</span><span class="p">]</span>
 
 <span class="n">weight_map3</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'White total cost'</span><span class="p">:</span> <span class="s1">'white'</span><span class="p">,</span>
-    <span class="s1">'Black total cost'</span><span class="p">:</span> <span class="s1">'black'</span><span class="p">,</span>
-    <span class="s1">'American Indian Alaska Native total cost'</span><span class="p">:</span> <span class="s1">'am_indian_alaska_native'</span><span class="p">,</span>
-    <span class="s1">'Asian total cost'</span><span class="p">:</span> <span class="s1">'asian'</span><span class="p">,</span>
-    <span class="s1">'Other race total cost'</span><span class="p">:</span> <span class="s1">'other_race'</span><span class="p">,</span>
-    <span class="s1">'Hispanic Latino total cost'</span><span class="p">:</span> <span class="s1">'hispanic_latino'</span><span class="p">,</span>
+    <span class="s2">"White total cost"</span><span class="p">:</span> <span class="s2">"white"</span><span class="p">,</span>
+    <span class="s2">"Black total cost"</span><span class="p">:</span> <span class="s2">"black"</span><span class="p">,</span>
+    <span class="s2">"American Indian Alaska Native total cost"</span><span class="p">:</span> <span class="s2">"am_indian_alaska_native"</span><span class="p">,</span>
+    <span class="s2">"Asian total cost"</span><span class="p">:</span> <span class="s2">"asian"</span><span class="p">,</span>
+    <span class="s2">"Other race total cost"</span><span class="p">:</span> <span class="s2">"other_race"</span><span class="p">,</span>
+    <span class="s2">"Hispanic Latino total cost"</span><span class="p">:</span> <span class="s2">"hispanic_latino"</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -8377,22 +8419,22 @@ Hispanic Latino high rated                       0.402221
 <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">race_variables3</span><span class="p">,</span> <span class="n">colors</span><span class="p">):</span>
     <span class="c1"># Get the weights for this variable</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">var</span><span class="p">]]</span>
-    
+
     <span class="c1"># Sort the values and weights by the values</span>
     <span class="n">values</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">var</span><span class="p">],</span> <span class="n">weights</span><span class="p">)))</span>
-    
+
     <span class="c1"># Calculate the cumulative sum of the weights</span>
     <span class="n">cumulative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
-    
+
     <span class="c1"># Normalize the cumulative sum to create a CDF</span>
     <span class="n">cumulative</span> <span class="o">=</span> <span class="n">cumulative</span> <span class="o">/</span> <span class="n">cumulative</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    
+
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">cumulative</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
 
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Weighted Cumulative Distribution Function (CDF) Plot'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Total cost'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Cumulative Probability'</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">'upper left'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Weighted Cumulative Distribution Function (CDF) Plot"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"Total cost"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"Cumulative Probability"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
 
 <span class="c1"># Set x-axis limit</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
@@ -8550,6 +8592,266 @@ Hispanic Latino total cost                     287.457213
 <div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Create an empty dataframe for the significance</span>
+<span class="n">significance_matrix1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables1</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables1</span><span class="p">)</span>
+<span class="c1"># Create an empty dataframe for the matrix</span>
+<span class="n">matrix1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables1</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">weighted_sample</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+    <span class="c1"># Repeat elements according to the weights</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">row_var</span> <span class="ow">in</span> <span class="n">race_variables1</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">col_var</span> <span class="ow">in</span> <span class="n">race_variables1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">row_var</span> <span class="o">!=</span> <span class="n">col_var</span><span class="p">:</span>
+            <span class="n">row_weighted_sample</span> <span class="o">=</span> <span class="n">weighted_sample</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">row_var</span><span class="p">]])</span>
+            <span class="n">col_weighted_sample</span> <span class="o">=</span> <span class="n">weighted_sample</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">col_var</span><span class="p">]])</span>
+
+            <span class="c1"># Perform a t-test</span>
+            <span class="n">t_stat</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">row_weighted_sample</span><span class="p">,</span> <span class="n">col_weighted_sample</span><span class="p">)</span>
+
+            <span class="c1"># Calculate the weighted means</span>
+            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># Store the difference and significance</span>
+            <span class="n">matrix1</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_weighted_mean</span> <span class="o">-</span> <span class="n">col_weighted_mean</span>
+            <span class="n">significance_matrix1</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'*'</span> <span class="k">if</span> <span class="n">p_value</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s1">''</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">matrix1</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[ ]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>White any</th>
+<th>Black any</th>
+<th>American Indian Alaska Native any</th>
+<th>Asian any</th>
+<th>Other race any</th>
+<th>Hispanic Latino any</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>White any</th>
+<td>NaN</td>
+<td>-0.018817</td>
+<td>-0.021563</td>
+<td>0.026921</td>
+<td>-0.022033</td>
+<td>-0.015735</td>
+</tr>
+<tr>
+<th>Black any</th>
+<td>0.018817</td>
+<td>NaN</td>
+<td>-0.002746</td>
+<td>0.045738</td>
+<td>-0.003216</td>
+<td>0.003082</td>
+</tr>
+<tr>
+<th>American Indian Alaska Native any</th>
+<td>0.021563</td>
+<td>0.002746</td>
+<td>NaN</td>
+<td>0.048484</td>
+<td>-0.00047</td>
+<td>0.005828</td>
+</tr>
+<tr>
+<th>Asian any</th>
+<td>-0.026921</td>
+<td>-0.045738</td>
+<td>-0.048484</td>
+<td>NaN</td>
+<td>-0.048954</td>
+<td>-0.042656</td>
+</tr>
+<tr>
+<th>Other race any</th>
+<td>0.022033</td>
+<td>0.003216</td>
+<td>0.00047</td>
+<td>0.048954</td>
+<td>NaN</td>
+<td>0.006298</td>
+</tr>
+<tr>
+<th>Hispanic Latino any</th>
+<td>0.015735</td>
+<td>-0.003082</td>
+<td>-0.005828</td>
+<td>0.042656</td>
+<td>-0.006298</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">significance_matrix1</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[ ]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>White any</th>
+<th>Black any</th>
+<th>American Indian Alaska Native any</th>
+<th>Asian any</th>
+<th>Other race any</th>
+<th>Hispanic Latino any</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>White any</th>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Black any</th>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>American Indian Alaska Native any</th>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Asian any</th>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Other race any</th>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+</tr>
+<tr>
+<th>Hispanic Latino any</th>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Matrix of differences</span>
 <span class="c1"># Create an empty dataframe for the matrix</span>
 <span class="n">matrix1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables1</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables1</span><span class="p">)</span>
@@ -8558,8 +8860,12 @@ Hispanic Latino total cost                     287.457213
 <span class="k">for</span> <span class="n">row_var</span> <span class="ow">in</span> <span class="n">race_variables1</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">col_var</span> <span class="ow">in</span> <span class="n">race_variables1</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">row_var</span> <span class="o">!=</span> <span class="n">col_var</span><span class="p">:</span>
-            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">row_var</span><span class="p">]])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">col_var</span><span class="p">]])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map1</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">matrix1</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_weighted_mean</span> <span class="o">-</span> <span class="n">col_weighted_mean</span>
 </pre></div>
 </div>
@@ -8683,6 +8989,262 @@ Hispanic Latino total cost                     287.457213
 <div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Create an empty dataframe for the significance</span>
+<span class="n">significance_matrix2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables2</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables2</span><span class="p">)</span>
+<span class="c1"># Create an empty dataframe for the matrix</span>
+<span class="n">matrix2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables2</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables2</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">row_var</span> <span class="ow">in</span> <span class="n">race_variables2</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">col_var</span> <span class="ow">in</span> <span class="n">race_variables2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">row_var</span> <span class="o">!=</span> <span class="n">col_var</span><span class="p">:</span>
+            <span class="n">row_weighted_sample</span> <span class="o">=</span> <span class="n">weighted_sample</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">row_var</span><span class="p">]])</span>
+            <span class="n">col_weighted_sample</span> <span class="o">=</span> <span class="n">weighted_sample</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">col_var</span><span class="p">]])</span>
+
+            <span class="c1"># Perform a t-test</span>
+            <span class="n">t_stat</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">row_weighted_sample</span><span class="p">,</span> <span class="n">col_weighted_sample</span><span class="p">)</span>
+
+            <span class="c1"># Calculate the weighted means</span>
+            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># Store the difference and significance</span>
+            <span class="n">matrix2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_weighted_mean</span> <span class="o">-</span> <span class="n">col_weighted_mean</span>
+            <span class="n">significance_matrix2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'*'</span> <span class="k">if</span> <span class="n">p_value</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s1">''</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">matrix2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[ ]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>White high rated</th>
+<th>Black high rated</th>
+<th>American Indian Alaska Native high rated</th>
+<th>Asian high rated</th>
+<th>Other race high rated</th>
+<th>Hispanic Latino high rated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>White high rated</th>
+<td>NaN</td>
+<td>-0.068578</td>
+<td>0.007972</td>
+<td>-0.050509</td>
+<td>-0.041752</td>
+<td>-0.033263</td>
+</tr>
+<tr>
+<th>Black high rated</th>
+<td>0.068578</td>
+<td>NaN</td>
+<td>0.07655</td>
+<td>0.018069</td>
+<td>0.026825</td>
+<td>0.035314</td>
+</tr>
+<tr>
+<th>American Indian Alaska Native high rated</th>
+<td>-0.007972</td>
+<td>-0.07655</td>
+<td>NaN</td>
+<td>-0.058481</td>
+<td>-0.049724</td>
+<td>-0.041235</td>
+</tr>
+<tr>
+<th>Asian high rated</th>
+<td>0.050509</td>
+<td>-0.018069</td>
+<td>0.058481</td>
+<td>NaN</td>
+<td>0.008756</td>
+<td>0.017245</td>
+</tr>
+<tr>
+<th>Other race high rated</th>
+<td>0.041752</td>
+<td>-0.026825</td>
+<td>0.049724</td>
+<td>-0.008756</td>
+<td>NaN</td>
+<td>0.008489</td>
+</tr>
+<tr>
+<th>Hispanic Latino high rated</th>
+<td>0.033263</td>
+<td>-0.035314</td>
+<td>0.041235</td>
+<td>-0.017245</td>
+<td>-0.008489</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">significance_matrix2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[ ]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>White high rated</th>
+<th>Black high rated</th>
+<th>American Indian Alaska Native high rated</th>
+<th>Asian high rated</th>
+<th>Other race high rated</th>
+<th>Hispanic Latino high rated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>White high rated</th>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Black high rated</th>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>American Indian Alaska Native high rated</th>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Asian high rated</th>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Other race high rated</th>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+</tr>
+<tr>
+<th>Hispanic Latino high rated</th>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Matrix of differences</span>
 <span class="c1"># Create an empty dataframe for the matrix</span>
 <span class="n">matrix2</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables2</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables2</span><span class="p">)</span>
@@ -8691,8 +9253,12 @@ Hispanic Latino total cost                     287.457213
 <span class="k">for</span> <span class="n">row_var</span> <span class="ow">in</span> <span class="n">race_variables2</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">col_var</span> <span class="ow">in</span> <span class="n">race_variables2</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">row_var</span> <span class="o">!=</span> <span class="n">col_var</span><span class="p">:</span>
-            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">row_var</span><span class="p">]])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">col_var</span><span class="p">]])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map2</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">matrix2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_weighted_mean</span> <span class="o">-</span> <span class="n">col_weighted_mean</span>
 </pre></div>
 </div>
@@ -8816,6 +9382,262 @@ Hispanic Latino total cost                     287.457213
 <div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Create an empty dataframe for the significance</span>
+<span class="n">significance_matrix3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables3</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables3</span><span class="p">)</span>
+<span class="c1"># Create an empty dataframe for the matrix</span>
+<span class="n">matrix3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables3</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables3</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">row_var</span> <span class="ow">in</span> <span class="n">race_variables3</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">col_var</span> <span class="ow">in</span> <span class="n">race_variables3</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">row_var</span> <span class="o">!=</span> <span class="n">col_var</span><span class="p">:</span>
+            <span class="n">row_weighted_sample</span> <span class="o">=</span> <span class="n">weighted_sample</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">row_var</span><span class="p">]])</span>
+            <span class="n">col_weighted_sample</span> <span class="o">=</span> <span class="n">weighted_sample</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">col_var</span><span class="p">]])</span>
+
+            <span class="c1"># Perform a t-test</span>
+            <span class="n">t_stat</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">ttest_ind</span><span class="p">(</span><span class="n">row_weighted_sample</span><span class="p">,</span> <span class="n">col_weighted_sample</span><span class="p">)</span>
+
+            <span class="c1"># Calculate the weighted means</span>
+            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+            <span class="c1"># Store the difference and significance</span>
+            <span class="n">matrix3</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_weighted_mean</span> <span class="o">-</span> <span class="n">col_weighted_mean</span>
+            <span class="n">significance_matrix3</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'*'</span> <span class="k">if</span> <span class="n">p_value</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s1">''</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">matrix3</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[ ]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>White total cost</th>
+<th>Black total cost</th>
+<th>American Indian Alaska Native total cost</th>
+<th>Asian total cost</th>
+<th>Other race total cost</th>
+<th>Hispanic Latino total cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>White total cost</th>
+<td>NaN</td>
+<td>-35.698944</td>
+<td>43.84877</td>
+<td>-36.765152</td>
+<td>-18.283936</td>
+<td>-12.005066</td>
+</tr>
+<tr>
+<th>Black total cost</th>
+<td>35.698944</td>
+<td>NaN</td>
+<td>79.547714</td>
+<td>-1.066208</td>
+<td>17.415009</td>
+<td>23.693878</td>
+</tr>
+<tr>
+<th>American Indian Alaska Native total cost</th>
+<td>-43.84877</td>
+<td>-79.547714</td>
+<td>NaN</td>
+<td>-80.613922</td>
+<td>-62.132706</td>
+<td>-55.853836</td>
+</tr>
+<tr>
+<th>Asian total cost</th>
+<td>36.765152</td>
+<td>1.066208</td>
+<td>80.613922</td>
+<td>NaN</td>
+<td>18.481216</td>
+<td>24.760086</td>
+</tr>
+<tr>
+<th>Other race total cost</th>
+<td>18.283936</td>
+<td>-17.415009</td>
+<td>62.132706</td>
+<td>-18.481216</td>
+<td>NaN</td>
+<td>6.27887</td>
+</tr>
+<tr>
+<th>Hispanic Latino total cost</th>
+<td>12.005066</td>
+<td>-23.693878</td>
+<td>55.853836</td>
+<td>-24.760086</td>
+<td>-6.27887</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">significance_matrix3</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[ ]:</div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>White total cost</th>
+<th>Black total cost</th>
+<th>American Indian Alaska Native total cost</th>
+<th>Asian total cost</th>
+<th>Other race total cost</th>
+<th>Hispanic Latino total cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>White total cost</th>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Black total cost</th>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>American Indian Alaska Native total cost</th>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Asian total cost</th>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<th>Other race total cost</th>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+<td></td>
+</tr>
+<tr>
+<th>Hispanic Latino total cost</th>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Matrix of differences</span>
 <span class="c1"># Create an empty dataframe for the matrix</span>
 <span class="n">matrix3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">race_variables3</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">race_variables3</span><span class="p">)</span>
@@ -8824,8 +9646,12 @@ Hispanic Latino total cost                     287.457213
 <span class="k">for</span> <span class="n">row_var</span> <span class="ow">in</span> <span class="n">race_variables3</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">col_var</span> <span class="ow">in</span> <span class="n">race_variables3</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">row_var</span> <span class="o">!=</span> <span class="n">col_var</span><span class="p">:</span>
-            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">row_var</span><span class="p">]])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">col_var</span><span class="p">]])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">row_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">row_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">row_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+            <span class="n">col_weighted_mean</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">col_var</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="n">weight_map3</span><span class="p">[</span><span class="n">col_var</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">matrix3</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_var</span><span class="p">,</span> <span class="n">col_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_weighted_mean</span> <span class="o">-</span> <span class="n">col_weighted_mean</span>
 </pre></div>
 </div>
@@ -8966,14 +9792,19 @@ Hispanic Latino total cost                     287.457213
 <span class="c1"># Convert the matrix to numeric</span>
 <span class="n">matrix1</span> <span class="o">=</span> <span class="n">matrix1</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="c1"># Use a diverging colormap (blue for negative, white for zero, red for positive)</span>
-<span class="n">colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'bwr'</span><span class="p">)</span>
+<span class="n">colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">"bwr"</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">matrix1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">'Difference'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix1</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">matrix1</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">'vertical'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Difference"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix1</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">matrix1</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+    <span class="n">rotation</span><span class="o">=</span><span class="s2">"vertical"</span><span class="p">,</span>
+    <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix1</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">matrix1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Average Difference Matrix'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Average Difference Matrix"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  <span class="c1"># this helps to ensure that labels fit into the figure area</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -9007,14 +9838,19 @@ Hispanic Latino total cost                     287.457213
 <span class="c1"># Convert the matrix to numeric</span>
 <span class="n">matrix2</span> <span class="o">=</span> <span class="n">matrix2</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="c1"># Use a diverging colormap (blue for negative, white for zero, red for positive)</span>
-<span class="n">colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'bwr'</span><span class="p">)</span>
+<span class="n">colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">"bwr"</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">matrix2</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">'Difference'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix2</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">matrix2</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">'vertical'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Difference"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix2</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">matrix2</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+    <span class="n">rotation</span><span class="o">=</span><span class="s2">"vertical"</span><span class="p">,</span>
+    <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix2</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">matrix2</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Average Difference Matrix'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Average Difference Matrix"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  <span class="c1"># this helps to ensure that labels fit into the figure area</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -9048,14 +9884,19 @@ Hispanic Latino total cost                     287.457213
 <span class="c1"># Convert the matrix to numeric</span>
 <span class="n">matrix3</span> <span class="o">=</span> <span class="n">matrix3</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="c1"># Use a diverging colormap (blue for negative, white for zero, red for positive)</span>
-<span class="n">colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s1">'bwr'</span><span class="p">)</span>
+<span class="n">colormap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s2">"bwr"</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">matrix3</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">colormap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">'Difference'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix3</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">matrix3</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="s1">'vertical'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Difference"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix3</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">matrix3</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+    <span class="n">rotation</span><span class="o">=</span><span class="s2">"vertical"</span><span class="p">,</span>
+    <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix3</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">matrix3</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'Average Difference Matrix'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">"Average Difference Matrix"</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  <span class="c1"># this helps to ensure that labels fit into the figure area</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
