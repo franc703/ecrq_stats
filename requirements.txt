@@ -8,4 +8,5 @@ ipywidgets==8.0.7
 black==23.7.0
 black-nb==0.7
 scipy
+seaborn
 
